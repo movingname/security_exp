@@ -169,7 +169,7 @@ void my_err(char *msg, ...) {
  **************************************************************************/
 void usage(void) {
   fprintf(stderr, "Usage:\n");
-  fprintf(stderr, "%s -i <ifacename> [-s|-c <serverIP>] [-p <port>] [-u|-a] [-d]\n", progname);
+  fprintf(stderr, "%s -i <ifacename> [-s|-c <serverIP>] [-p <port>] [-u|-a] [-d] [-t <protocol>] \n", progname);
   fprintf(stderr, "%s -h\n", progname);
   fprintf(stderr, "\n");
   fprintf(stderr, "-i <ifacename>: Name of interface to use (mandatory)\n");
@@ -178,6 +178,7 @@ void usage(void) {
   fprintf(stderr, "-u|-a: use TUN (-u, default) or TAP (-a)\n");
   fprintf(stderr, "-d: outputs debug information while running\n");
   fprintf(stderr, "-h: prints this help text\n");
+  fprintf(stderr, "-t <protocol> use tcp or udp (default)");
   exit(1);
 }
 
@@ -185,11 +186,10 @@ int main(int argc, char *argv[]) {
   
   int tap_fd, option;
   int flags = IFF_TUN;
+  int protocol = SOCK_DGRAM;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
-  int maxfd;
-  uint16_t nread, nwrite, plength;
-//  uint16_t total_len, ethertype;
+  int maxfd; uint16_t nread, nwrite, plength; //  uint16_t total_len, ethertype;
   char buffer[BUFSIZE];
   struct sockaddr_in local, remote;
   char remote_ip[16] = "";
@@ -208,11 +208,11 @@ int main(int argc, char *argv[]) {
         debug = 1;
         break;
       case 'h':
-        usage();
-        break;
+        usage(); 
+	break; 
       case 'i':
-        strncpy(if_name,optarg,IFNAMSIZ-1);
-        break;
+	strncpy(if_name,optarg,IFNAMSIZ-1); 
+	break;
       case 's':
         cliserv = SERVER;
         break;
@@ -221,15 +221,19 @@ int main(int argc, char *argv[]) {
         strncpy(remote_ip,optarg,15);
         break;
       case 'p':
-        port = atoi(optarg);
-        break;
+ 	port = atoi(optarg); 
+	break; 
       case 'u':
         flags = IFF_TUN;
         break;
       case 'a':
-        flags = IFF_TAP;
-        header_len = ETH_HDR_LEN;
+        flags = IFF_TAP; header_len = ETH_HDR_LEN;
         break;
+      case 't':
+	if (strcmp(optarg, "tcp")==0){
+	  protocol = SOCK_STREAM;
+	}
+	break;
       default:
         my_err("Unknown option %c\n", option);
         usage();
@@ -263,7 +267,7 @@ int main(int argc, char *argv[]) {
 
   do_debug("Successfully connected to interface %s\n", if_name);
 
-  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+  if ( (sock_fd = socket(AF_INET, protocol, 0)) < 0) {
     perror("socket()");
     exit(1);
   }
@@ -277,14 +281,16 @@ int main(int argc, char *argv[]) {
     remote.sin_addr.s_addr = inet_addr(remote_ip);
     remote.sin_port = htons(port);
 
-    /* connection request */
-    if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
-      perror("connect()");
-      exit(1);
-    }
+    if(protocol == SOCK_STREAM){
+      /* connection request */
+      if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
+	perror("connect()");
+	exit(1);
+      }
 
+      do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
+    }
     net_fd = sock_fd;
-    do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
     
   } else {
     /* Server, wait for connections */
@@ -304,21 +310,22 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     
-    if (listen(sock_fd, 5) < 0){
-      perror("listen()");
-      exit(1);
+    if (protocol == SOCK_STREAM){
+      if (listen(sock_fd, 5) < 0){
+	perror("listen()");
+	exit(1);
+      }
+ 
+      /* wait for connection request */
+      remotelen = sizeof(remote);
+      memset(&remote, 0, remotelen);
+      if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
+        perror("accept()");
+        exit(1);
+      }
+      do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
     }
-    
-    /* wait for connection request */
-    remotelen = sizeof(remote);
-    memset(&remote, 0, remotelen);
-    if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
-      perror("accept()");
-      exit(1);
-    }
-
-    do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
-  }
+}
   
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
@@ -353,7 +360,6 @@ int main(int argc, char *argv[]) {
       plength = htons(nread);
       nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
       nwrite = cwrite(net_fd, buffer, nread);
-      
       do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
     }
 
