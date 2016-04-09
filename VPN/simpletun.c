@@ -311,6 +311,9 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     
+    memset(&remote, 0, sizeof(remote));
+    remotelen = sizeof(remote);
+    
     if (protocol == SOCK_STREAM){
       if (listen(sock_fd, 5) < 0){
 	perror("listen()");
@@ -318,15 +321,13 @@ int main(int argc, char *argv[]) {
       }
  
       /* wait for connection request */
-      remotelen = sizeof(remote);
-      memset(&remote, 0, remotelen);
       if ((net_fd = accept(sock_fd, (struct sockaddr*)&remote, &remotelen)) < 0){
         perror("accept()");
         exit(1);
       }
       do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
     }
-}
+  }
   
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
@@ -358,8 +359,12 @@ int main(int argc, char *argv[]) {
       /* write length + packet */
       plength = htons(nread);
       if(protocol == SOCK_DGRAM){
-	nwrite = sendto(net_fd, (char *)&plength, sizeof(plength), 0, (struct sockaddr *)&remote, sizeof(remote)); 
-	nwrite = sendto(net_fd, buffer, nread, 0, (struct sockaddr *)&remote, sizeof(remote));
+	if ((nwrite = sendto(net_fd, (char *)&plength, sizeof(plength), 0, (struct sockaddr *)&remote, sizeof(remote))) <0){
+	  perror("sendto");
+	} 
+	if ((nwrite = sendto(net_fd, buffer, nread, 0, (struct sockaddr *)&remote, sizeof(remote))) <0){
+	  perror("sendto");
+	}
       }else{
 	nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
         nwrite = cwrite(net_fd, buffer, nread);
