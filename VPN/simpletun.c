@@ -363,18 +363,18 @@ int main(int argc, char *argv[]) {
       }else{
 	nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
         nwrite = cwrite(net_fd, buffer, nread);
-        do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite); 
       }
+      do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
     }
       
     if(FD_ISSET(net_fd, &rd_set)){
       /* data from the network: read it, and write it to the tun/tap interface. 
        * We need to read the length first, and then the packet */
+       
+      /* Read length */ 
       if(protocol == SOCK_DGRAM){
         nread = recvfrom(net_fd, (char *)&plength, sizeof(plength), 0,  (struct sockaddr *)&remote, &remotelen);	
       }else{
-	
-	/* Read length */      
 	nread = read_n(net_fd, (char *)&plength, sizeof(plength));
       }
       if(nread == 0) {
@@ -384,10 +384,10 @@ int main(int argc, char *argv[]) {
 
       net2tap++;
       
+      /* read packet */
       if(protocol == SOCK_DGRAM){
 	nread = recvfrom(net_fd, buffer, ntohs(plength), 0, (struct sockaddr *)&remote, &remotelen);	
       }else{ 
-	/* read packet */
 	nread = read_n(net_fd, buffer, ntohs(plength));
       }
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
