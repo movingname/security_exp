@@ -357,7 +357,7 @@ int main(int argc, char *argv[]) {
 
       /* write length + packet */
       plength = htons(nread);
-      if(protocol == SOCK_STREAM){
+      if(protocol == SOCK_DGRAM){
 	nwrite = sendto(net_fd, (char *)&plength, sizeof(plength), 0, (struct sockaddr *)&remote, sizeof(remote)); 
 	nwrite = sendto(net_fd, buffer, nread, 0, (struct sockaddr *)&remote, sizeof(remote));
       }else{
