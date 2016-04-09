@@ -363,8 +363,11 @@ int main(int argc, char *argv[]) {
       }else{
 	nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
         nwrite = cwrite(net_fd, buffer, nread);
-        do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite); }
-if(FD_ISSET(net_fd, &rd_set)){
+        do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite); 
+      }
+    }
+      
+    if(FD_ISSET(net_fd, &rd_set)){
       /* data from the network: read it, and write it to the tun/tap interface. 
        * We need to read the length first, and then the packet */
       if(protocol == SOCK_DGRAM){
@@ -392,7 +395,7 @@ if(FD_ISSET(net_fd, &rd_set)){
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
       nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
-}    
- } 
+    }    
+  } 
   return(0);
 }
