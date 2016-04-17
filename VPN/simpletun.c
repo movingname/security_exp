@@ -283,7 +283,7 @@ int main(int argc, char *argv[]) {
     remote.sin_port = htons(port);
 
     if(protocol == SOCK_STREAM){
-      /* connection request */
+      /* It's a TCP, so we try to establish connection. */
       if (connect(sock_fd, (struct sockaddr*) &remote, sizeof(remote)) < 0){
 	perror("connect()");
 	exit(1);
@@ -359,6 +359,7 @@ int main(int argc, char *argv[]) {
       /* write length + packet */
       plength = htons(nread);
       if(protocol == SOCK_DGRAM){
+      	/* UDP */
 	if ((nwrite = sendto(net_fd, (char *)&plength, sizeof(plength), 0, (struct sockaddr *)&remote, sizeof(remote))) <0){
 	  perror("sendto");
 	} 
@@ -366,6 +367,7 @@ int main(int argc, char *argv[]) {
 	  perror("sendto");
 	}
       }else{
+      	/* TCP */
 	nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
         nwrite = cwrite(net_fd, buffer, nread);
       }
