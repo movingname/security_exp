@@ -326,7 +326,9 @@ int main(int argc, char *argv[]) {
         exit(1);
       }
       do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
-    }
+    }else{
+		net_fd = sock_fd;
+	}
   }
   
   /* use select() to handle two descriptors at once */
@@ -381,6 +383,7 @@ int main(int argc, char *argv[]) {
       /* Read length */ 
       if(protocol == SOCK_DGRAM){
         nread = recvfrom(net_fd, (char *)&plength, sizeof(plength), 0,  (struct sockaddr *)&remote, &remotelen);	
+		do_debug("Read %d bytes from the network (UDP).\n", nread);
       }else{
 	nread = read_n(net_fd, (char *)&plength, sizeof(plength));
       }
