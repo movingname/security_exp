@@ -29,20 +29,19 @@ This program creates a simple tunnel using TUN/TAP. Basically, when it starts, i
 This program needs to have a connection to both the TUN/TAP interface and the network interface. Then it serves as intermediary between
 these two interfaces.
 
-Use UDP
+Task 1: Use UDP
 
-1. We can just update the line for creating the socket.
+We updated the code to support both TCP and UDP.
 
+Reference:
 https://www.cs.rutgers.edu/~pxk/417/notes/sockets/udp.html
 
-2. Use Wireshark to verify
-
-
+We used Wireshark to verify.
 
 **Q:** Why it is better to use UDP in the tunnel, instead of TCP?
 
 For security reasons? UDP is more resistant against attackers that control the network? Maybe the VPN protocol needs its own way
-to do network control?
+to do network control? But what about the unreliability of UDP?
 
 
 Resources
