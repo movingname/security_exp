@@ -1,0 +1,55 @@
+<html>
+<head> 
+	<title>Self-modifying HTML</title> 
+	<script> 
+		function appendp() { 
+			var h1_node = document.createElement("h1");
+			h1_node.innerHTML = "Self-modifying HTML Document"; 
+			document.childNodes[0].childNodes[2].appendChild(h1_node); 
+			var p_node = document.createElement("p"); 
+			p_node.innerHTML = "This web page illustrates how DOM API can be used to modify a web page"; 
+			document.childNodes[0].childNodes[2].appendChild(p_node); 
+		}
+		
+		function gethtmlchildren() { 
+			var entiredoc = document.childNodes[0]; 
+			var docnodes = entiredoc.childNodes; 
+			for(i=0;i<docnodes.length; i++) 
+				alert(docnodes[i].nodeName); 
+		}
+
+		function traverseDOMTree(){
+			_traverseDOMTree(document);
+		}
+
+		function _traverseDOMTree(node){
+			
+			// alert(node.nodeName + "\n" + node.outerHTML);
+
+			console.log(node.nodeName);
+
+			if(node.childNodes == null)
+				return;
+		
+			children = node.childNodes;
+
+			console.log(children.length);
+			
+			// Q: Why only i==0 will be executed?
+			for(i=0; i<children.length; i++){
+				// console.log(children[i].nodeName)
+				_traverseDOMTree(children[i]);
+			}
+			console.log(node.nodeName);	
+		}
+
+	</script> 
+</head> 
+<body name="bodybody" > 
+	<script> 
+		appendp();
+	</script> 
+	<input type="button" value="Display children of HTML tag" onclick=traverseDOMTree() > 
+</body> 
+</html>
+
