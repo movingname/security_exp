@@ -1,0 +1,45 @@
+<script>
+var simplecookie = document.cookie;	// get the cookie
+
+var age = (60*60);	// the cookie will expire in one hour
+var path = "/cookie";		// the cookie is shared with all directories in the same domain
+if (simplecookie == "")	// store the cookie if it's not already set
+{
+	document.write("This is your first time visiting this web recently.");
+	var name = encodeURIComponent(prompt("What is your name: "));	// value shouldn't contain ";" or other special characters, so we encode it.
+	var color = encodeURIComponent(prompt("What is your favorite color: "));
+	document.cookie = "name=" + name + 	// '+' concatenates strings together.
+		"&color=" + color +		// different properties of cookie are seperated by "&".
+		"&visit-count=1" +  
+		";max-age=" + age;		// different attributes are seperated by ";".
+	//	";path=" + path;		Path attribute doesn't work as expected. Try it out yourself.
+	// we didn't set domain attribute since we only share the cookie within the current domain
+	// we didn't set secure attribute since it's ok to transmit the cookie in plain text.
+}
+else
+{
+	var cookies = simplecookie.split('&');	   // Break the string of all cookies into individual cookie strings
+	for(var i = 0; i < cookies.length; i++)		// parse cookies.
+	{
+		if (cookies[i].substring(0, "name=".length) == ("name="))
+		{
+			var name = decodeURIComponent(cookies[i].substring("name=".length));
+			document.writeln("Welcome back " + name + "<p>");
+		}
+		else if (cookies[i].substring(0, "color=".length) == ("color="))
+		{
+			var color = decodeURIComponent(cookies[i].substring("color=".length));
+			document.bgColor = color;	// set background color as user's preference.
+		}
+		else if (cookies[i].substring(0, "visit-count=".length) == ("visit-count="))
+		{
+			var visit_count = parseInt(decodeURIComponent(cookies[i].substring("visit-count=".length)));
+			visit_count += 1;
+			document.writeln("This is your " + visit_count + " visits");
+			simplecookie = simplecookie.replace("visit-count=" + (visit_count-1), "visit-count=" + (visit_count));
+		}
+    }
+	document.cookie = simplecookie;		// reset cookie to refresh age.
+}
+</script>
+
