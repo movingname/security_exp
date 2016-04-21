@@ -36,4 +36,12 @@ Q: Web servers now support XMLHttpRequest by default?
 
 Task 4:
 
-TODO
+Requests from the following HTML components will be allowed to another hosts. This is to support collaboration between websites without having too much security risk.
+- img
+- script
+- a
+- iframe
+
+They all initiate a GET request.
+
+Q: anything else?
