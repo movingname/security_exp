@@ -16,7 +16,7 @@ When trying to load Google into the iframe, we see that the GET requests succeed
     [09:40:20.428] GET https://www.google.com/?gws_rd=ssl [HTTP/1.1 200 OK 446ms]
     [09:40:20.823] Load denied by X-Frame-Options: https://www.google.com/?gws_rd=ssl does not permit cross-origin framing.
 
-Loading the navitation.html with port 8080 also works. Does it violate SOP? Actually, there are some restrictions for
+Loading the navitation.html in the iframe with port 8080 works. But there are some restrictions for
 the parent:
 - cannot read the frame's cookie
 - cannot access dom properties, such as URL and history. IN the console, type main.history and the result is "Permission
