@@ -73,7 +73,8 @@ Modified the /etc/nsswitch.conf as follows.
 Source:
 http://unix.stackexchange.com/questions/28941/what-dns-servers-am-i-using
 
-Solved. Wireshark was listening on the wrong interface.
+Solved. Wireshark was listening on the wrong interface. If needed, I can also disable the NAT interface:
+http://superuser.com/questions/695297/disable-network-adaptor-eth0-on-debian
 
 **Q:** It seems that the OS sends out a DNS query to each interface. Why? 
 
