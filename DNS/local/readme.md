@@ -65,7 +65,7 @@ And even if we do, the DNS query to 192.168.56.101 is still missing, and the fir
 
 **Q:** Why the DNS query to 192.168.56.101 is missing?
 
-Modified the /etc/nsswitch.conf as follows. Still the same
+Modified the /etc/nsswitch.conf as follows.
 
     #hosts:          files mdns4_minimal [NOTFOUND=return] dns mdns4
     hosts:		files dns
@@ -73,6 +73,9 @@ Modified the /etc/nsswitch.conf as follows. Still the same
 Source:
 http://unix.stackexchange.com/questions/28941/what-dns-servers-am-i-using
 
+Solved. Wireshark was listening on the wrong interface.
+
+**Q:** It seems that the OS sends out a DNS query to each interface. Why? 
 
 Task 2:
 
