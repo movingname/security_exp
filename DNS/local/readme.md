@@ -86,3 +86,13 @@ to the DNS server? Why?
 One possibility is that there is a OS-level DNS cache. I think Windows has this.
 However, this thread says that Linux does not have OS-level DNS cache:
 http://unix.stackexchange.com/questions/28553/how-to-read-the-local-dns-cache-contents
+
+Solved. See above.
+
+**Q:** When I use the user machine to ping the DNS server, wireshark on the attacker machine cannot capture those ICMP packages. Also cannot capture DNS queries. Why?
+
+Asked a question:
+http://networkengineering.stackexchange.com/questions/30105/using-wireshark-to-capture-traffic-between-vms-on-a-third-vm
+
+
+
