@@ -94,5 +94,5 @@ Solved. See above.
 Asked a question:
 http://networkengineering.stackexchange.com/questions/30105/using-wireshark-to-capture-traffic-between-vms-on-a-third-vm
 
-
+Need to select All VMs in the Promiscuous mode of the network adapter.
 
