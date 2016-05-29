@@ -19,3 +19,5 @@ http://www.fuzzysecurity.com/tutorials/mr_me/6.html
 
 Yet another free() exploitation technique
 http://phrack.org/issues/66/6.html
+
+http://daniel-tomescu.com/hackerone/landpage.php
