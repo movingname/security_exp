@@ -14,7 +14,7 @@ def primitive_roots(n):
     # Some properties:
     # - The primitive root g lies in [2, n)
     # - g ^ k = a mode n
-    # -- a can be [1, n-1] (Q: Why not 0?)
+    # -- a can be [1, n-1] (Q: Why not 0?) (Wikipedia says it is enought for a to be all coprimes of n)
     # -- k can be [1, n-1]
     # -- Then we know that if g is a primitive root, k1 and k2 shall not give the same result.
     
