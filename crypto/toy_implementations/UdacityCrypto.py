@@ -56,3 +56,8 @@ def pad_bits_append(small, size):
     # for the purpose of this exercise
     diff = max(0, size - len(small))
     return small + [0] * diff
+
+
+def xor_bits(bits_a, bits_b):
+    """returns a new bit array that is the xor of `bits_a` and `bits_b`"""
+    return [a^b for a, b in zip(bits_a, bits_b)]
